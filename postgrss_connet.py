@@ -1,19 +1,21 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-import mysql.connector
+import psycopg2
+from psycopg2 import sql
 
 app = FastAPI()
 
 # Database connection details
 config = {
-    'user': 'root',
-    'password': '',
+    'dbname': 'demo',
+    'user': 'postgres',
+    'password': 'pass',
     'host': 'localhost',
-    'database': 'test'
+    'port': 5432
 }
 
 def connect_to_db():
-    return mysql.connector.connect(**config)
+    return psycopg2.connect(**config)
 
 class Officer(BaseModel):
     role_id: int
@@ -63,12 +65,12 @@ def create_station(station: PoliceStation):
         conn.close()
         return {"message": "Police station created successfully"}
 
-    except mysql.connector.Error as err:
+    except Exception as err:
         conn.rollback()  # Rollback any changes if an error occurs
         return {"message": f"Error: {err}"}
 
     finally:
-        if conn.is_connected():
+        if conn is not None:
             cursor.close()
             conn.close()
 
@@ -99,15 +101,14 @@ def create_role(role: Role):
         conn.close()
         return {"message": "Role created successfully"}
 
-    except mysql.connector.Error as err:
+    except Exception as err:
         conn.rollback()  # Rollback any changes if an error occurs
         return {"message": f"Error: {err}"}
 
     finally:
-        if conn.is_connected():
+        if conn is not None:
             cursor.close()
             conn.close()
-
 
 @app.post("/officers/update")
 def update_officer(officer: Officer):
@@ -133,14 +134,6 @@ def create_officer(officer: Officer):
     cursor = conn.cursor()
 
     try:
-        # # Check if role_id exists in ROLE table
-        # check_role_query = "SELECT role_id FROM ROLE WHERE role_id = %s"
-        # cursor.execute(check_role_query, (officer.role_id,))
-        # result = cursor.fetchone()
-
-        # if not result:
-        #     raise HTTPException(status_code=404, detail=f"Role with role_id {officer.role_id} does not exist")
-
         create_officer_query = """
         INSERT INTO POLICE_OFFICER (role_id, first_name, last_name, post, mobile_no, address, username, password, station_id)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
@@ -154,15 +147,14 @@ def create_officer(officer: Officer):
         conn.close()
         return {"message": "Officer created successfully"}
 
-    except mysql.connector.Error as err:
+    except Exception as err:
         conn.rollback()  # Rollback any changes if an error occurs
         return {"message": f"Error: {err}"}
 
     finally:
-        if conn.is_connected():
+        if conn is not None:
             cursor.close()
             conn.close()
-
 
 @app.get("/getOfficers")
 def read_officers():
@@ -174,7 +166,6 @@ def read_officers():
     cursor.close()
     conn.close()
     return officers
-
 
 @app.get("/officers/{officer_id}")
 def read_officer(officer_id: int):
@@ -218,8 +209,6 @@ def delete_officer(officer_id: int):
     cursor.close()
     conn.close()
     return {"message": "Officer deleted successfully"}
-
-# Add similar endpoints for other tables...
 
 if __name__ == '__main__':
     import uvicorn

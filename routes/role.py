@@ -9,11 +9,11 @@ router = APIRouter()
 load_dotenv()
 
 config = {
-    "dbname": os.getenv("DB_NAME"),
-    "user": "postgres",
-    "password": os.getenv("DB_PASSWORD"),
-    "host": "localhost",
-    "port": os.getenv("DB_PORT"),
+    'dbname': os.getenv('DB_NAME'),
+    'user': 'postgres',
+    'password': os.getenv('DB_PASSWORD'),
+    'host': 'localhost',
+    'port': os.getenv('DB_PORT')
 }
 
 

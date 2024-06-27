@@ -76,8 +76,8 @@ def update_officer(
     password,
     station_id,
 ):
-    response = requests.post(
-        f"{API_URL}/officers/update",
+    response = requests.put(
+        f"{API_URL}/officers/{officer_id}",
         json={
             "officer_id": officer_id,
             "role_id": role_id,
@@ -91,6 +91,10 @@ def update_officer(
             "station_id": station_id,
         },
     )
+    return response.json()
+
+def delete_officer(officer_id):
+    response = requests.delete(f"{API_URL}/officers/{officer_id}")
     return response.json()
 
 
@@ -150,15 +154,15 @@ def admin_tab():
 
     st.subheader("Read Data")
     if st.button("Get All Police Stations", key="admin_get_stations"):
-        stations = get_data("stations/getAll")
+        stations = get_data("stations")
         st.write(stations)
 
     if st.button("Get All Roles", key="admin_get_roles"):
-        roles = get_data("roles/getAll")
+        roles = get_data("roles")
         st.write(roles)
 
     if st.button("Get All Officers", key="admin_get_officers"):
-        officers = get_data("getOfficers")
+        officers = get_data("officers")
         st.write(officers)
 
     st.subheader("Update Officer")
@@ -254,7 +258,7 @@ def user_tab():
 
     st.subheader("Read Data")
     if st.button("Get All Police Stations", key="user_get_stations"):
-        stations = get_data("stations/getAll")
+        stations = get_data("stations")
         st.write(stations)
 
     # if st.button("Get All Roles", key="user_get_roles"):
@@ -262,7 +266,7 @@ def user_tab():
     #     st.write(roles)
 
     if st.button("Get All Officers", key="user_get_officers"):
-        officers = get_data("getOfficers")
+        officers = get_data("officers")
         st.write(officers)
 
 

@@ -135,6 +135,17 @@ def create_officer(officer: Officer):
             conn.close()
 
 
+@app.get("/getOfficers")
+def read_officers():
+    conn = connect_to_db()
+    cursor = conn.cursor()
+    read_officers_query = "SELECT * FROM POLICE_OFFICER"
+    cursor.execute(read_officers_query)
+    officers = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return officers
+
 
 @app.get("/officers/{officer_id}")
 def read_officer(officer_id: int):

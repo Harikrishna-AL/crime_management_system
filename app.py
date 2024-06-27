@@ -1,5 +1,9 @@
 import streamlit as st
 import requests
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+import os
+import time
 
 API_URL = "http://localhost:8000"  # URL of your FastAPI app
 
@@ -87,7 +91,7 @@ def admin_tab():
         st.write(roles)
 
     if st.button("Get All Officers", key="admin_get_officers"):
-        officers = get_data("officers")
+        officers = get_data("getOfficers")
         st.write(officers)
 
     st.subheader("Update Officer")
@@ -125,12 +129,12 @@ def user_tab():
         result = create_station(station_name, location, username, password)
         st.write(result)
 
-    st.subheader("Create Role")
-    role_name = st.text_input("Role Name", key="user_role_name")
-    permission = st.text_input("Permission", key="user_permission")
-    if st.button("Create Role", key="user_create_role_button"):
-        result = create_role(role_name, permission)
-        st.write(result)
+    # st.subheader("Create Role")
+    # role_name = st.text_input("Role Name", key="user_role_name")
+    # permission = st.text_input("Permission", key="user_permission")
+    # if st.button("Create Role", key="user_create_role_button"):
+    #     result = create_role(role_name, permission)
+    #     st.write(result)
 
     st.subheader("Create Officer")
     role_id = st.number_input("Role ID", min_value=1, key="user_role_id")
@@ -151,12 +155,12 @@ def user_tab():
         stations = get_data("stations/getAll")
         st.write(stations)
 
-    if st.button("Get All Roles", key="user_get_roles"):
-        roles = get_data("roles")
-        st.write(roles)
+    # if st.button("Get All Roles", key="user_get_roles"):
+    #     roles = get_data("roles")
+    #     st.write(roles)
 
     if st.button("Get All Officers", key="user_get_officers"):
-        officers = get_data("officers")
+        officers = get_data("getOfficers")
         st.write(officers)
 
 # Tabs for admin and user
@@ -170,3 +174,21 @@ with tab2:
 
 # if __name__ == '__main__':
 #     st.run()
+
+class MyHandler(FileSystemEventHandler):
+    def on_modified(self, event):
+        if event.src_path.endswith(".py"):
+            st.experimental_rerun()
+
+if __name__ == "__main__":
+    observer = Observer()
+    event_handler = MyHandler()
+    observer.schedule(event_handler, path='.', recursive=False)
+    observer.start()
+
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        observer.stop()
+    observer.join()

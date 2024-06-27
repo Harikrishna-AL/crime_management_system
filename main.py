@@ -72,6 +72,17 @@ def create_station(station: PoliceStation):
             cursor.close()
             conn.close()
 
+@app.get("/roles/getAll")
+def read_roles():
+    conn = connect_to_db()
+    cursor = conn.cursor()
+    read_roles_query = "SELECT * FROM ROLE"
+    cursor.execute(read_roles_query)
+    roles = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return roles
+
 @app.post("/roles/")
 def create_role(role: Role):
     conn = connect_to_db()
@@ -97,6 +108,24 @@ def create_role(role: Role):
             cursor.close()
             conn.close()
 
+
+@app.post("/officers/update")
+def update_officer(officer: Officer):
+    conn = connect_to_db()
+    cursor = conn.cursor()
+    update_officer_query = """
+    UPDATE POLICE_OFFICER
+    SET role_id = %s, first_name = %s, last_name = %s, post = %s, mobile_no = %s, address = %s, username = %s, password = %s, station_id = %s
+    WHERE officer_id = %s
+    """
+    cursor.execute(update_officer_query, (
+        officer.role_id, officer.first_name, officer.last_name, officer.post,
+        officer.mobile_no, officer.address, officer.username, officer.password, officer.station_id
+    ))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return {"message": "Officer updated successfully"}
 
 @app.post("/officers/")
 def create_officer(officer: Officer):

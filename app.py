@@ -42,6 +42,24 @@ def create_officer(role_id, first_name, last_name, post, mobile_no, address, use
     })
     return response.json()
 
+# Function to update an officer
+
+def update_officer(officer_id, role_id, first_name, last_name, post, mobile_no, address, username, password, station_id):
+    response = requests.post(f"{API_URL}/officers/update", json={
+        "officer_id": officer_id,
+        "role_id": role_id,
+        "first_name": first_name,
+        "last_name": last_name,
+        "post": post,
+        "mobile_no": mobile_no,
+        "address": address,
+        "username": username,
+        "password": password,
+        "station_id": station_id
+    })
+    return response.json()
+
+
 # Function to get data from an endpoint
 def get_data(endpoint):
     response = requests.get(f"{API_URL}/{endpoint}/")
@@ -87,7 +105,7 @@ def admin_tab():
         st.write(stations)
 
     if st.button("Get All Roles", key="admin_get_roles"):
-        roles = get_data("roles")
+        roles = get_data("roles/getAll")
         st.write(roles)
 
     if st.button("Get All Officers", key="admin_get_officers"):

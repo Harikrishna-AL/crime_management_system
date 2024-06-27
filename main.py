@@ -7,9 +7,9 @@ app = FastAPI()
 # Database connection details
 config = {
     'user': 'root',
-    'password': 'hari2430',
+    'password': '',
     'host': 'localhost',
-    'database': 'crime'
+    'database': 'test'
 }
 
 def connect_to_db():
@@ -35,6 +35,17 @@ class PoliceStation(BaseModel):
     location: str
     username: str
     password: str
+
+@app.get("/stations/getAll")
+def read_stations():
+    conn = connect_to_db()
+    cursor = conn.cursor()
+    read_stations_query = "SELECT * FROM POLICE_STATION"
+    cursor.execute(read_stations_query)
+    stations = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return stations
 
 @app.post("/stations/")
 def create_station(station: PoliceStation):

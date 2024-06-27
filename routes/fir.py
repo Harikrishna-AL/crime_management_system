@@ -3,21 +3,23 @@ from pydantic import BaseModel
 import psycopg2
 from psycopg2 import sql
 from dotenv import load_dotenv
-import os 
+import os
 
 router = APIRouter()
 load_dotenv()
 
 config = {
-    'dbname': os.getenv('DB_NAME'),
-    'user': 'postgres',
-    'password': 'hari2430',
-    'host': 'localhost',
-    'port': os.getenv('DB_PORT')
+    "dbname": os.getenv("DB_NAME"),
+    "user": "postgres",
+    "password": os.getenv("DB_PASSWORD"),
+    "host": "localhost",
+    "port": os.getenv("DB_PORT"),
 }
+
 
 def connect_to_db():
     return psycopg2.connect(**config)
+
 
 class FIR(BaseModel):
     police_station_id: int
@@ -39,10 +41,18 @@ def create_fir(fir: FIR):
         INSERT INTO FIR (police_station_id, officer_id, title, act, complaint_name, date_added, details)
         VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
-        cursor.execute(create_fir_query, (
-            fir.police_station_id, fir.officer_id, fir.title, fir.act, fir.complaint_name,
-            fir.date_added, fir.details
-        ))
+        cursor.execute(
+            create_fir_query,
+            (
+                fir.police_station_id,
+                fir.officer_id,
+                fir.title,
+                fir.act,
+                fir.complaint_name,
+                fir.date_added,
+                fir.details,
+            ),
+        )
         conn.commit()
         return {"message": "FIR created successfully"}
 
@@ -54,6 +64,7 @@ def create_fir(fir: FIR):
         cursor.close()
         conn.close()
 
+
 @router.get("/firs/")
 def read_firs():
     conn = connect_to_db()
@@ -64,6 +75,7 @@ def read_firs():
     cursor.close()
     conn.close()
     return firs
+
 
 @router.get("/firs/{fir_id}")
 def read_fir(fir_id: int):
@@ -79,6 +91,7 @@ def read_fir(fir_id: int):
     else:
         raise HTTPException(status_code=404, detail="FIR not found")
 
+
 @router.put("/firs/{fir_id}")
 def update_fir(fir_id: int, fir: FIR):
     conn = connect_to_db()
@@ -88,14 +101,24 @@ def update_fir(fir_id: int, fir: FIR):
     SET police_station_id = %s, officer_id = %s, title = %s, act = %s, complaint_name = %s, date_added = %s, details = %s
     WHERE fir_id = %s
     """
-    cursor.execute(update_fir_query, (
-        fir.police_station_id, fir.officer_id, fir.title, fir.act, fir.complaint_name,
-        fir.date_added, fir.details, fir_id
-    ))
+    cursor.execute(
+        update_fir_query,
+        (
+            fir.police_station_id,
+            fir.officer_id,
+            fir.title,
+            fir.act,
+            fir.complaint_name,
+            fir.date_added,
+            fir.details,
+            fir_id,
+        ),
+    )
     conn.commit()
     cursor.close()
     conn.close()
     return {"message": "FIR updated successfully"}
+
 
 @router.delete("/firs/{fir_id}")
 def delete_fir(fir_id: int):

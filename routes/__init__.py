@@ -3,3 +3,8 @@ from .station import router as station_router
 from .officer import router as officer_router
 from .fir import router as fir_router
 from .crime import router as crime_router
+from .investigation import router as investigation_router
+from .criminal import router as criminal_router
+from .investigation_officers import router as investigation_officers_router
+from .crimes_involved import router as crimes_involved_router
+from .part_of import router as part_of_router

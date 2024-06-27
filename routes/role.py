@@ -3,25 +3,28 @@ from pydantic import BaseModel
 import psycopg2
 from psycopg2 import sql
 from dotenv import load_dotenv
-import os 
+import os
 
 router = APIRouter()
 load_dotenv()
 
 config = {
-    'dbname': os.getenv('DB_NAME'),
-    'user': 'postgres',
-    'password': 'hari2430',
-    'host': 'localhost',
-    'port': os.getenv('DB_PORT')
+    "dbname": os.getenv("DB_NAME"),
+    "user": "postgres",
+    "password": os.getenv("DB_PASSWORD"),
+    "host": "localhost",
+    "port": os.getenv("DB_PORT"),
 }
+
 
 def connect_to_db():
     return psycopg2.connect(**config)
 
+
 class Role(BaseModel):
     role_name: str
     permission: str
+
 
 @router.get("/roles/")
 def read_roles():
@@ -33,6 +36,7 @@ def read_roles():
     cursor.close()
     conn.close()
     return roles
+
 
 @router.post("/roles/")
 def create_role(role: Role):
@@ -59,6 +63,7 @@ def create_role(role: Role):
             cursor.close()
             conn.close()
 
+
 @router.put("/roles/{role_id}")
 def update_role(role_id: int, role: Role):
     conn = connect_to_db()
@@ -68,13 +73,12 @@ def update_role(role_id: int, role: Role):
     SET role_name = %s, permission = %s
     WHERE role_id = %s
     """
-    cursor.execute(update_role_query, (
-        role.role_name, role.permission, role_id
-    ))
+    cursor.execute(update_role_query, (role.role_name, role.permission, role_id))
     conn.commit()
     cursor.close()
     conn.close()
     return {"message": "Role updated successfully"}
+
 
 @router.delete("/roles/{role_id}")
 def delete_role(role_id: int):

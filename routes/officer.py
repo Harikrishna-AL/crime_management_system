@@ -3,18 +3,18 @@ from pydantic import BaseModel
 import psycopg2
 from psycopg2 import sql
 from dotenv import load_dotenv
-import os 
+import os
 
 router = APIRouter()
 
 load_dotenv()
 
 config = {
-    'dbname': os.getenv('DB_NAME'),
-    'user': 'postgres',
-    'password': 'hari2430',
-    'host': 'localhost',
-    'port': os.getenv('DB_PORT')
+    "dbname": os.getenv("DB_NAME"),
+    "user": "postgres",
+    "password": os.getenv("DB_PASSWORD"),
+    "host": "localhost",
+    "port": os.getenv("DB_PORT"),
 }
 
 
@@ -44,10 +44,20 @@ def create_officer(officer: Officer):
         INSERT INTO POLICE_OFFICER (role_id, first_name, last_name, post, mobile_no, address, username, password, station_id)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
-        cursor.execute(create_officer_query, (
-            officer.role_id, officer.first_name, officer.last_name, officer.post,
-            officer.mobile_no, officer.address, officer.username, officer.password, officer.station_id
-        ))
+        cursor.execute(
+            create_officer_query,
+            (
+                officer.role_id,
+                officer.first_name,
+                officer.last_name,
+                officer.post,
+                officer.mobile_no,
+                officer.address,
+                officer.username,
+                officer.password,
+                officer.station_id,
+            ),
+        )
         conn.commit()
         return {"message": "Officer created successfully"}
 
@@ -59,6 +69,7 @@ def create_officer(officer: Officer):
         cursor.close()
         conn.close()
 
+
 @router.get("/officers/")
 def read_officers():
     conn = connect_to_db()
@@ -69,6 +80,7 @@ def read_officers():
     cursor.close()
     conn.close()
     return officers
+
 
 @router.get("/officers/{officer_id}")
 def read_officer(officer_id: int):
@@ -84,6 +96,7 @@ def read_officer(officer_id: int):
     else:
         raise HTTPException(status_code=404, detail="Officer not found")
 
+
 @router.put("/officers/{officer_id}")
 def update_officer(officer_id: int, officer: Officer):
     conn = connect_to_db()
@@ -93,14 +106,26 @@ def update_officer(officer_id: int, officer: Officer):
     SET role_id = %s, first_name = %s, last_name = %s, post = %s, mobile_no = %s, address = %s, username = %s, password = %s, station_id = %s
     WHERE officer_id = %s
     """
-    cursor.execute(update_officer_query, (
-        officer.role_id, officer.first_name, officer.last_name, officer.post,
-        officer.mobile_no, officer.address, officer.username, officer.password, officer.station_id, officer_id
-    ))
+    cursor.execute(
+        update_officer_query,
+        (
+            officer.role_id,
+            officer.first_name,
+            officer.last_name,
+            officer.post,
+            officer.mobile_no,
+            officer.address,
+            officer.username,
+            officer.password,
+            officer.station_id,
+            officer_id,
+        ),
+    )
     conn.commit()
     cursor.close()
     conn.close()
     return {"message": "Officer updated successfully"}
+
 
 @router.delete("/officers/{officer_id}")
 def delete_officer(officer_id: int):

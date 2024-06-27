@@ -3,29 +3,31 @@ from pydantic import BaseModel
 import psycopg2
 from psycopg2 import sql
 from dotenv import load_dotenv
-import os 
+import os
 
 router = APIRouter()
 
 load_dotenv()
 
 config = {
-    'dbname': os.getenv('DB_NAME'),
-    'user': 'postgres',
-    'password': 'hari2430',
-    'host': 'localhost',
-    'port': os.getenv('DB_PORT')
+    "dbname": os.getenv("DB_NAME"),
+    "user": "postgres",
+    "password": os.getenv("DB_PASSWORD"),
+    "host": "localhost",
+    "port": os.getenv("DB_PORT"),
 }
 
 
 def connect_to_db():
     return psycopg2.connect(**config)
 
+
 class PoliceStation(BaseModel):
     station_name: str
     location: str
     username: str
     password: str
+
 
 @router.get("/stations/")
 def read_stations():
@@ -38,6 +40,7 @@ def read_stations():
     conn.close()
     return stations
 
+
 @router.post("/stations/")
 def create_station(station: PoliceStation):
     conn = connect_to_db()
@@ -48,7 +51,15 @@ def create_station(station: PoliceStation):
         INSERT INTO POLICE_STATION (station_name, location, username, password)
         VALUES (%s, %s, %s, %s)
         """
-        cursor.execute(create_station_query, (station.station_name, station.location, station.username, station.password))
+        cursor.execute(
+            create_station_query,
+            (
+                station.station_name,
+                station.location,
+                station.username,
+                station.password,
+            ),
+        )
         conn.commit()
         return {"message": "Police station created successfully"}
 
@@ -60,6 +71,7 @@ def create_station(station: PoliceStation):
         cursor.close()
         conn.close()
 
+
 @router.put("/stations/{station_id}")
 def update_station(station_id: int, station: PoliceStation):
     conn = connect_to_db()
@@ -69,13 +81,21 @@ def update_station(station_id: int, station: PoliceStation):
     SET station_name = %s, location = %s, username = %s, password = %s
     WHERE station_id = %s
     """
-    cursor.execute(update_station_query, (
-        station.station_name, station.location, station.username, station.password, station_id
-    ))
+    cursor.execute(
+        update_station_query,
+        (
+            station.station_name,
+            station.location,
+            station.username,
+            station.password,
+            station_id,
+        ),
+    )
     conn.commit()
     cursor.close()
     conn.close()
     return {"message": "Police station updated successfully"}
+
 
 @router.delete("/stations/{station_id}")
 def delete_station(station_id: int):

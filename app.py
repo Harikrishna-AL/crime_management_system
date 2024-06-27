@@ -9,54 +9,88 @@ API_URL = "http://localhost:8000"  # URL of your FastAPI app
 
 st.title("Police Management System")
 
+
 # Function to create a police station
 def create_station(station_name, location, username, password):
-    response = requests.post(f"{API_URL}/stations/", json={
-        "station_name": station_name,
-        "location": location,
-        "username": username,
-        "password": password
-    })
+    response = requests.post(
+        f"{API_URL}/stations/",
+        json={
+            "station_name": station_name,
+            "location": location,
+            "username": username,
+            "password": password,
+        },
+    )
     return response.json()
+
 
 # Function to create a role
 def create_role(role_name, permission):
-    response = requests.post(f"{API_URL}/roles/", json={
-        "role_name": role_name,
-        "permission": permission
-    })
+    response = requests.post(
+        f"{API_URL}/roles/", json={"role_name": role_name, "permission": permission}
+    )
     return response.json()
 
+
 # Function to create an officer
-def create_officer(role_id, first_name, last_name, post, mobile_no, address, username, password, station_id):
-    response = requests.post(f"{API_URL}/officers/", json={
-        "role_id": role_id,
-        "first_name": first_name,
-        "last_name": last_name,
-        "post": post,
-        "mobile_no": mobile_no,
-        "address": address,
-        "username": username,
-        "password": password,
-        "station_id": station_id
-    })
+def create_officer(
+    role_id,
+    first_name,
+    last_name,
+    post,
+    mobile_no,
+    address,
+    username,
+    password,
+    station_id,
+):
+    response = requests.post(
+        f"{API_URL}/officers/",
+        json={
+            "role_id": role_id,
+            "first_name": first_name,
+            "last_name": last_name,
+            "post": post,
+            "mobile_no": mobile_no,
+            "address": address,
+            "username": username,
+            "password": password,
+            "station_id": station_id,
+        },
+    )
     return response.json()
+
 
 # Function to update an officer
 
-def update_officer(officer_id, role_id, first_name, last_name, post, mobile_no, address, username, password, station_id):
-    response = requests.post(f"{API_URL}/officers/update", json={
-        "officer_id": officer_id,
-        "role_id": role_id,
-        "first_name": first_name,
-        "last_name": last_name,
-        "post": post,
-        "mobile_no": mobile_no,
-        "address": address,
-        "username": username,
-        "password": password,
-        "station_id": station_id
-    })
+
+def update_officer(
+    officer_id,
+    role_id,
+    first_name,
+    last_name,
+    post,
+    mobile_no,
+    address,
+    username,
+    password,
+    station_id,
+):
+    response = requests.post(
+        f"{API_URL}/officers/update",
+        json={
+            "officer_id": officer_id,
+            "role_id": role_id,
+            "first_name": first_name,
+            "last_name": last_name,
+            "post": post,
+            "mobile_no": mobile_no,
+            "address": address,
+            "username": username,
+            "password": password,
+            "station_id": station_id,
+        },
+    )
     return response.json()
 
 
@@ -64,6 +98,7 @@ def update_officer(officer_id, role_id, first_name, last_name, post, mobile_no, 
 def get_data(endpoint):
     response = requests.get(f"{API_URL}/{endpoint}/")
     return response.json()
+
 
 # Admin tab
 def admin_tab():
@@ -73,7 +108,9 @@ def admin_tab():
     station_name = st.text_input("Station Name", key="admin_station_name")
     location = st.text_input("Location", key="admin_location")
     username = st.text_input("Station Username", key="admin_station_username")
-    password = st.text_input("Station Password", type="password", key="admin_station_password")
+    password = st.text_input(
+        "Station Password", type="password", key="admin_station_password"
+    )
     if st.button("Create Station", key="admin_create_station_button"):
         result = create_station(station_name, location, username, password)
         st.write(result)
@@ -93,10 +130,22 @@ def admin_tab():
     mobile_no = st.text_input("Mobile Number", key="admin_mobile_no")
     address = st.text_input("Address", key="admin_address")
     username = st.text_input("Officer Username", key="admin_officer_username")
-    password = st.text_input("Officer Password", type="password", key="admin_officer_password")
+    password = st.text_input(
+        "Officer Password", type="password", key="admin_officer_password"
+    )
     station_id = st.number_input("Station ID", min_value=1, key="admin_station_id")
     if st.button("Create Officer", key="admin_create_officer_button"):
-        result = create_officer(role_id, first_name, last_name, post, mobile_no, address, username, password, station_id)
+        result = create_officer(
+            role_id,
+            first_name,
+            last_name,
+            post,
+            mobile_no,
+            address,
+            username,
+            password,
+            station_id,
+        )
         st.write(result)
 
     st.subheader("Read Data")
@@ -113,26 +162,47 @@ def admin_tab():
         st.write(officers)
 
     st.subheader("Update Officer")
-    officer_id_update = st.number_input("Officer ID to Update", min_value=1, key="admin_officer_id_update")
-    update_role_id = st.number_input("New Role ID", min_value=1, key="admin_update_role_id")
+    officer_id_update = st.number_input(
+        "Officer ID to Update", min_value=1, key="admin_officer_id_update"
+    )
+    update_role_id = st.number_input(
+        "New Role ID", min_value=1, key="admin_update_role_id"
+    )
     update_first_name = st.text_input("New First Name", key="admin_update_first_name")
     update_last_name = st.text_input("New Last Name", key="admin_update_last_name")
     update_post = st.text_input("New Post", key="admin_update_post")
     update_mobile_no = st.text_input("New Mobile Number", key="admin_update_mobile_no")
     update_address = st.text_input("New Address", key="admin_update_address")
     update_username = st.text_input("New Username", key="admin_update_username")
-    update_password = st.text_input("New Password", type="password", key="admin_update_password")
-    update_station_id = st.number_input("New Station ID", min_value=1, key="admin_update_station_id")
+    update_password = st.text_input(
+        "New Password", type="password", key="admin_update_password"
+    )
+    update_station_id = st.number_input(
+        "New Station ID", min_value=1, key="admin_update_station_id"
+    )
     if st.button("Update Officer", key="admin_update_officer_button"):
-        result = update_officer(officer_id_update, update_role_id, update_first_name, update_last_name, update_post,
-                                update_mobile_no, update_address, update_username, update_password, update_station_id)
+        result = update_officer(
+            officer_id_update,
+            update_role_id,
+            update_first_name,
+            update_last_name,
+            update_post,
+            update_mobile_no,
+            update_address,
+            update_username,
+            update_password,
+            update_station_id,
+        )
         st.write(result)
 
     st.subheader("Delete Officer")
-    officer_id_delete = st.number_input("Officer ID to Delete", min_value=1, key="admin_officer_id_delete")
+    officer_id_delete = st.number_input(
+        "Officer ID to Delete", min_value=1, key="admin_officer_id_delete"
+    )
     if st.button("Delete Officer", key="admin_delete_officer_button"):
         result = delete_officer(officer_id_delete)
         st.write(result)
+
 
 # User tab
 def user_tab():
@@ -142,7 +212,9 @@ def user_tab():
     station_name = st.text_input("Station Name", key="user_station_name")
     location = st.text_input("Location", key="user_location")
     username = st.text_input("Station Username", key="user_station_username")
-    password = st.text_input("Station Password", type="password", key="user_station_password")
+    password = st.text_input(
+        "Station Password", type="password", key="user_station_password"
+    )
     if st.button("Create Station", key="user_create_station_button"):
         result = create_station(station_name, location, username, password)
         st.write(result)
@@ -162,10 +234,22 @@ def user_tab():
     mobile_no = st.text_input("Mobile Number", key="user_mobile_no")
     address = st.text_input("Address", key="user_address")
     username = st.text_input("Officer Username", key="user_officer_username")
-    password = st.text_input("Officer Password", type="password", key="user_officer_password")
+    password = st.text_input(
+        "Officer Password", type="password", key="user_officer_password"
+    )
     station_id = st.number_input("Station ID", min_value=1, key="user_station_id")
     if st.button("Create Officer", key="user_create_officer_button"):
-        result = create_officer(role_id, first_name, last_name, post, mobile_no, address, username, password, station_id)
+        result = create_officer(
+            role_id,
+            first_name,
+            last_name,
+            post,
+            mobile_no,
+            address,
+            username,
+            password,
+            station_id,
+        )
         st.write(result)
 
     st.subheader("Read Data")
@@ -181,6 +265,7 @@ def user_tab():
         officers = get_data("getOfficers")
         st.write(officers)
 
+
 # Tabs for admin and user
 tab1, tab2 = st.tabs(["Admin", "User"])
 
@@ -193,15 +278,17 @@ with tab2:
 # if __name__ == '__main__':
 #     st.run()
 
+
 class MyHandler(FileSystemEventHandler):
     def on_modified(self, event):
         if event.src_path.endswith(".py"):
             st.experimental_rerun()
 
+
 if __name__ == "__main__":
     observer = Observer()
     event_handler = MyHandler()
-    observer.schedule(event_handler, path='.', recursive=False)
+    observer.schedule(event_handler, path=".", recursive=False)
     observer.start()
 
     try:

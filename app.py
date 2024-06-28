@@ -23,6 +23,27 @@ def create_station(station_name, location, username, password):
     )
     return response.json()
 
+# Function to edit a police station
+def update_station(station_id, station_name, location, username, password):
+    response = requests.put(
+        f"{API_URL}/stations/{station_id}",
+        json={
+            "station_name": station_name,
+            "location": location,
+            "username": username,
+            "password": password,
+        },
+    )
+    return response.json()
+
+# Function to delete a police station
+def delete_station(station_id):
+    response = requests.delete(f"{API_URL}/stations/{station_id}")
+    try:
+        return response.json()
+    except requests.exceptions.JSONDecodeError:
+        print(response.content)
+        return {"message": "Failed to decode JSON response", "response_text": response.text}
 
 # Function to create a role
 def create_role(role_name, permission):
@@ -386,12 +407,39 @@ def admin_tab():
         result = create_station(station_name, location, username, password)
         st.write(result)
 
-    st.subheader("Create Role")
-    role_name = st.text_input("Role Name", key="admin_role_name")
-    permission = st.text_input("Permission", key="admin_permission")
-    if st.button("Create Role", key="admin_create_role_button"):
-        result = create_role(role_name, permission)
+    
+    st.subheader("View Police Stations")
+    if st.button("View Police Stations", key="admin_view_stations_button"):
+        stations = get_data("stations")
+        st.table(stations)
+    
+
+    st.subheader("Update Police Station")
+    station_id = st.number_input("Station ID to Update", min_value=1, key="admin_station_id_update")
+    update_station_name = st.text_input("New Station Name", key="admin_update_station_name")
+    update_location = st.text_input("New Location", key="admin_update_location")
+    update_username = st.text_input("New Station Username", key="admin_update_station_username")
+    update_password = st.text_input(
+        "New Station Password", type="password", key="admin_update_station_password"
+    )
+    if st.button("Update Station", key="admin_update_station_button"):
+        result = update_station(station_id, update_station_name, update_location, update_username, update_password)
         st.write(result)
+
+    
+    st.subheader("Delete Police Station")
+    station_id_delete = st.number_input("Station ID to Delete", min_value=1, key="admin_station_id_delete")
+    if st.button("Delete Station", key="admin_delete_station_button"):
+        result = delete_station(station_id_delete)
+        st.write(result)
+    
+
+    # st.subheader("Create Role")
+    # role_name = st.text_input("Role Name", key="admin_role_name")
+    # permission = st.text_input("Permission", key="admin_permission")
+    # if st.button("Create Role", key="admin_create_role_button"):
+    #     result = create_role(role_name, permission)
+    #     st.write(result)
 
     st.subheader("Create Officer")
     role_id = st.number_input("Role ID", min_value=1, key="admin_role_id")
@@ -758,16 +806,16 @@ def admin_tab():
 def user_tab():
     st.header("User Operations")
 
-    st.subheader("Create Police Station")
-    station_name = st.text_input("Station Name", key="user_station_name")
-    location = st.text_input("Location", key="user_location")
-    username = st.text_input("Station Username", key="user_station_username")
-    password = st.text_input(
-        "Station Password", type="password", key="user_station_password"
-    )
-    if st.button("Create Station", key="user_create_station_button"):
-        result = create_station(station_name, location, username, password)
-        st.write(result)
+    # st.subheader("Create Police Station")
+    # station_name = st.text_input("Station Name", key="user_station_name")
+    # location = st.text_input("Location", key="user_location")
+    # username = st.text_input("Station Username", key="user_station_username")
+    # password = st.text_input(
+    #     "Station Password", type="password", key="user_station_password"
+    # )
+    # if st.button("Create Station", key="user_create_station_button"):
+    #     result = create_station(station_name, location, username, password)
+    #     st.write(result)
 
     # st.subheader("Create Role")
     # role_name = st.text_input("Role Name", key="user_role_name")
@@ -776,36 +824,68 @@ def user_tab():
     #     result = create_role(role_name, permission)
     #     st.write(result)
 
-    st.subheader("Create Officer")
-    role_id = st.number_input("Role ID", min_value=1, key="user_role_id")
-    first_name = st.text_input("First Name", key="user_first_name")
-    last_name = st.text_input("Last Name", key="user_last_name")
-    post = st.text_input("Post", key="user_post")
-    mobile_no = st.text_input("Mobile Number", key="user_mobile_no")
-    address = st.text_input("Address", key="user_address")
-    username = st.text_input("Officer Username", key="user_officer_username")
-    password = st.text_input(
-        "Officer Password", type="password", key="user_officer_password"
-    )
-    station_id = st.number_input("Station ID", min_value=1, key="user_station_id")
-    if st.button("Create Officer", key="user_create_officer_button"):
-        result = create_officer(
-            role_id,
-            first_name,
-            last_name,
-            post,
-            mobile_no,
-            address,
-            username,
-            password,
-            station_id,
-        )
+    # st.subheader("Create Officer")
+    # role_id = st.number_input("Role ID", min_value=1, key="user_role_id")
+    # first_name = st.text_input("First Name", key="user_first_name")
+    # last_name = st.text_input("Last Name", key="user_last_name")
+    # post = st.text_input("Post", key="user_post")
+    # mobile_no = st.text_input("Mobile Number", key="user_mobile_no")
+    # address = st.text_input("Address", key="user_address")
+    # username = st.text_input("Officer Username", key="user_officer_username")
+    # password = st.text_input(
+    #     "Officer Password", type="password", key="user_officer_password"
+    # )
+    # station_id = st.number_input("Station ID", min_value=1, key="user_station_id")
+    # if st.button("Create Officer", key="user_create_officer_button"):
+    #     result = create_officer(
+    #         role_id,
+    #         first_name,
+    #         last_name,
+    #         post,
+    #         mobile_no,
+    #         address,
+    #         username,
+    #         password,
+    #         station_id,
+    #     )
+    #     st.write(result)
+
+    # st.subheader("Read Data")
+    # if st.button("Get All Police Stations", key="user_get_stations"):
+    #     stations = get_data("stations")
+    #     st.table(stations)
+
+    st.subheader("Create FIR")
+    police_station_id = st.number_input("Police Station ID", min_value=1, key="user_police_station_id")
+    officer_id = st.number_input("Officer ID", min_value=1, key="user_officer_id")
+    title = st.text_input("Title", key="user_title")
+    act = st.text_input("Act", key="user_act")
+    complaint_name = st.text_input("Complaint Name", key="user_complaint_name")
+    date_added = st.text_input("Date Added (YYYY-MM-DD)", key="user_date_added")
+    details = st.text_area("Details", key="user_details")
+    contact_number = st.text_input("Contact Number", key="user_contact_number")
+    if st.button("Create FIR", key="user_create_fir_button"):
+        result = create_fir(police_station_id, officer_id, title, act, complaint_name, date_added, details, contact_number)
+        st.write(result)
+
+    st.subheader("Update FIR")
+    fir_id_update = st.number_input("FIR ID to Update", min_value=1, key="user_fir_id_update")
+    update_police_station_id = st.number_input("New Police Station ID", min_value=1, key="user_update_police_station_id")
+    update_officer_id = st.number_input("New Officer ID", min_value=1, key="user_update_officer_id")
+    update_title = st.text_input("New Title", key="user_update_title")
+    update_act = st.text_input("New Act", key="user_update_act")
+    update_complaint_name = st.text_input("New Complaint Name", key="user_update_complaint_name")
+    update_date_added = st.text_input("New Date Added (YYYY-MM-DD)", key="user_update_date_added")
+    update_details = st.text_area("New Details", key="user_update_details")
+    update_contact_number = st.text_input("New Contact Number", key="user_update_contact_number")
+    if st.button("Update FIR", key="user_update_fir_button"):
+        result = update_fir(fir_id_update, update_police_station_id, update_officer_id, update_title, update_act, update_complaint_name, update_date_added, update_details, update_contact_number)
         st.write(result)
 
     st.subheader("Read Data")
     if st.button("Get All Police Stations", key="user_get_stations"):
         stations = get_data("stations")
-        st.write(stations)
+        st.table(stations)
 
     # if st.button("Get All Roles", key="user_get_roles"):
     #     roles = get_data("roles")
@@ -813,7 +893,7 @@ def user_tab():
 
     if st.button("Get All Officers", key="user_get_officers"):
         officers = get_data("officers")
-        st.write(officers)
+        st.table(officers)
 
 
 # Tabs for admin and user

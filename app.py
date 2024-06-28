@@ -233,6 +233,143 @@ def delete_fir(fir_id):
         print(response.content)
         return {"message": "Failed to decode JSON response", "response_text": response.text}
 
+# Criminal Operations
+
+# Function to create a criminal
+def create_criminal(first_name, last_name, address, city, gender, height, date_arrest, date_release, date_birth, occupation):
+    response = requests.post(
+        f"{API_URL}/criminals/",
+        json={
+            "first_name": first_name,
+            "last_name": last_name,
+            "address": address,
+            "city": city,
+            "gender": gender,
+            "height": height,
+            "date_arrest": date_arrest,
+            "date_release": date_release,
+            "date_birth": date_birth,
+            "occupation": occupation,
+        },
+    )
+    return response.json()
+
+# Function to read all criminals
+def read_criminals():
+    response = requests.get(f"{API_URL}/criminals/")
+    return response.json()
+
+# Function to read a specific criminal
+def read_criminal(criminal_id):
+    response = requests.get(f"{API_URL}/criminals/{criminal_id}")
+    return response.json()
+
+# Function to update a criminal
+def update_criminal(criminal_id, first_name, last_name, address, city, gender, height, date_arrest, date_release, date_birth, occupation):
+    response = requests.put(
+        f"{API_URL}/criminals/{criminal_id}",
+        json={
+            "first_name": first_name,
+            "last_name": last_name,
+            "address": address,
+            "city": city,
+            "gender": gender,
+            "height": height,
+            "date_arrest": date_arrest,
+            "date_release": date_release,
+            "date_birth": date_birth,
+            "occupation": occupation,
+        },
+    )
+    return response.json()
+
+# Function to delete a criminal
+def delete_criminal(criminal_id):
+    response = requests.delete(f"{API_URL}/criminals/{criminal_id}")
+    return response.json()
+
+# Function to create an investigation officer
+def create_investigation_officer(officer_id, investigation_id):
+    response = requests.post(
+        f"{API_URL}/investigation_officers/",
+        json={
+            "officer_id": officer_id,
+            "investigation_id": investigation_id,
+        },
+    )
+    return response.json()
+
+# Function to read all investigation officers
+def read_investigation_officers():
+    response = requests.get(f"{API_URL}/investigation_officers/")
+    return response.json()
+
+# Function to read a specific investigation officer
+def read_investigation_officer(officer_id, investigation_id):
+    response = requests.get(f"{API_URL}/investigation_officers/{officer_id}/{investigation_id}")
+    return response.json()
+
+# Function to delete an investigation officer
+def delete_investigation_officer(officer_id, investigation_id):
+    response = requests.delete(f"{API_URL}/investigation_officers/{officer_id}/{investigation_id}")
+    return response.json()
+
+
+# Crimes involved
+
+# Function to create crimes involved
+def create_crimes_involved(crime_id, criminal_id):
+    response = requests.post(
+        f"{API_URL}/crimes_involved/",
+        json={
+            "crime_id": crime_id,
+            "criminal_id": criminal_id,
+        },
+    )
+    return response.json()
+
+# Function to read all crimes involved
+def read_crimes_involved():
+    response = requests.get(f"{API_URL}/crimes_involved/")
+    return response.json()
+
+# Function to read a specific crimes involved
+def read_specific_crimes_involved(crime_id, criminal_id):
+    response = requests.get(f"{API_URL}/crimes_involved/{crime_id}/{criminal_id}")
+    return response.json()
+
+# Function to delete crimes involved
+def delete_crimes_involved(crime_id, criminal_id):
+    response = requests.delete(f"{API_URL}/crimes_involved/{crime_id}/{criminal_id}")
+    return response.json()
+
+# PART OF
+
+# Function to create part of
+def create_part_of(investigation_id, criminal_id):
+    response = requests.post(
+        f"{API_URL}/part_of/",
+        json={
+            "investigation_id": investigation_id,
+            "criminal_id": criminal_id,
+        },
+    )
+    return response.json()
+
+# Function to read all part of entries
+def read_part_of():
+    response = requests.get(f"{API_URL}/part_of/")
+    return response.json()
+
+# Function to read a specific part of entry
+def read_specific_part_of(investigation_id, criminal_id):
+    response = requests.get(f"{API_URL}/part_of/{investigation_id}/{criminal_id}")
+    return response.json()
+
+# Function to delete part of entry
+def delete_part_of(investigation_id, criminal_id):
+    response = requests.delete(f"{API_URL}/part_of/{investigation_id}/{criminal_id}")
+    return response.json()
 
 # Admin tab
 def admin_tab():
@@ -459,6 +596,161 @@ def admin_tab():
     crime_id_delete = st.number_input("Crime ID to Delete", min_value=1, key="admin_delete_crime_id")
     if st.button("Delete Crime"):
         result = delete_crime(crime_id_delete)
+        st.write(result)
+    
+    st.title("Criminal Operations")
+
+    # Create Criminal
+    st.subheader("Create Criminal")
+    first_name = st.text_input("First Name")
+    last_name = st.text_input("Last Name")
+    address = st.text_input("Address")
+    city = st.text_input("City")
+    gender = st.text_input("Gender")
+    height = st.number_input("Height")
+    date_arrest = st.text_input("Date of Arrest (YYYY-MM-DD)")
+    date_release = st.text_input("Date of Release (YYYY-MM-DD)")
+    date_birth = st.text_input("Date of Birth (YYYY-MM-DD)")
+    occupation = st.text_input("Occupation")
+    if st.button("Create Criminal"):
+        result = create_criminal(first_name, last_name, address, city, gender, height, date_arrest, date_release, date_birth, occupation)
+        st.write(result)
+
+    # Read Criminals
+    st.subheader("Read Criminals")
+    if st.button("Get All Criminals"):
+        criminals = read_criminals()
+        st.write(criminals)
+
+    # Read Specific Criminal
+    st.subheader("Read Specific Criminal")
+    criminal_id_read = st.number_input("Criminal ID to Read", min_value=1, key="read_criminal_id")
+    if st.button("Read Criminal"):
+        criminal = read_criminal(criminal_id_read)
+        st.write(criminal)
+
+    # Update Criminal
+    st.subheader("Update Criminal")
+    criminal_id_update = st.number_input("Criminal ID to Update", min_value=1, key="update_criminal_id")
+    # update_name = st.text_input("New Name", key="update_name")
+    update_first_name = st.text_input("New Name", key="admin_update_criminal_first_name")
+    update_last_name = st.text_input("New Name", key="admin_update_criminal_last_name")
+    update_address = st.text_input("New Address", key="admin_update_criminal_address")
+    update_city = st.text_input("New City", key="admin_update_criminal_city")
+    update_gender = st.text_input("New Gender", key="admin_update_criminal_gender")
+    update_height = st.text_input("New Height", key="update_height")
+    update_date_arrest = st.text_input("New Date of Arrest (YYYY-MM-DD)", key="admin_update_criminal_arrest")
+    update_date_release = st.text_input("New Date of Release (YYYY-MM-DD)", key="admin_update_criminal_release")
+    update_date_birth = st.text_input("New Date of Birth (YYYY-MM-DD)", key="admin_update_criminal_date_birth")
+    update_occupation = st.text_input("New Occupation", key="admin_update_criminal_occupation")
+    if st.button("Update Criminal"):
+        result = update_criminal(criminal_id_update, update_first_name, update_last_name, update_address, update_city, update_gender, update_height, update_date_arrest, update_date_release, update_date_birth, update_occupation)
+        st.write(result)
+
+    # Delete Criminal
+    st.subheader("Delete Criminal")
+    criminal_id_delete = st.number_input("Criminal ID to Delete", min_value=1, key="delete_criminal_id")
+    if st.button("Delete Criminal"):
+        result = delete_criminal(criminal_id_delete)
+        st.write(result)
+    
+
+    st.title("Investigation Officer Operations")
+
+    # Create Investigation Officer
+    st.subheader("Create Investigation Officer")
+    officer_id = st.number_input("Officer ID", min_value=1, step=1)
+    investigation_id = st.number_input("Investigation ID", min_value=1, step=1)
+    if st.button("Create Investigation Officer"):
+        result = create_investigation_officer(officer_id, investigation_id)
+        st.write(result)
+
+    # Read Investigation Officers
+    st.subheader("Read Investigation Officers")
+    if st.button("Get All Investigation Officers"):
+        investigation_officers = read_investigation_officers()
+        st.write(investigation_officers)
+
+    # Read Specific Investigation Officer
+    st.subheader("Read Specific Investigation Officer")
+    officer_id_read = st.number_input("Officer ID", min_value=1, step=1, key="read_officer_id")
+    investigation_id_read = st.number_input("Investigation ID", min_value=1, step=1, key="admin_read_investigation_id")
+    if st.button("Read Investigation Officer"):
+        investigation_officer = read_investigation_officer(officer_id_read, investigation_id_read)
+        st.write(investigation_officer)
+
+    # Delete Investigation Officer
+    st.subheader("Delete Investigation Officer")
+    officer_id_delete = st.number_input("Officer ID", min_value=1, step=1, key="delete_officer_id")
+    investigation_id_delete = st.number_input("Investigation ID", min_value=1, step=1, key="admin_delete_investigation_id")
+    if st.button("Delete Investigation Officer"):
+        result = delete_investigation_officer(officer_id_delete, investigation_id_delete)
+        st.write(result)
+
+    
+    st.title("Crimes Involved Operations")
+
+    # Create Crimes Involved
+    st.subheader("Create Crimes Involved")
+    crime_id = st.number_input("Crime ID", min_value=1, step=1)
+    criminal_id = st.number_input("Criminal ID", min_value=1, step=1)
+    if st.button("Create Crimes Involved"):
+        result = create_crimes_involved(int(crime_id), int(criminal_id))
+        st.write(result)
+
+    # Read Crimes Involved
+    st.subheader("Read Crimes Involved")
+    if st.button("Get All Crimes Involved"):
+        crimes_involved = read_crimes_involved()
+        st.write(crimes_involved)
+
+    # Read Specific Crimes Involved
+    st.subheader("Read Specific Crimes Involved")
+    crime_id_read = st.number_input("Crime ID", min_value=1, step=1, key="admin_read_crime_id")
+    criminal_id_read = st.number_input("Criminal ID", min_value=1, step=1, key="admin_read_criminal_id")
+    if st.button("Read Crimes Involved"):
+        crimes_involved = read_specific_crimes_involved(int(crime_id_read), int(criminal_id_read))
+        st.write(crimes_involved)
+
+    # Delete Crimes Involved
+    st.subheader("Delete Crimes Involved")
+    crime_id_delete = st.number_input("Crime ID", min_value=1, step=1, key="admin_delete_crimes_id")
+    criminal_id_delete = st.number_input("Criminal ID", min_value=1, step=1, key="admin_delete_crimes_involved")
+    if st.button("Delete Crimes Involved"):
+        result = delete_crimes_involved(int(crime_id_delete), int(criminal_id_delete))
+        st.write(result)
+
+
+        st.title("Part Of Operations")
+
+    # Create Part Of
+    st.subheader("Create Part Of")
+    investigation_id = st.number_input("Investigation ID", min_value=1, step=1, key="admin_part_of_investigation_id")
+    criminal_id = st.number_input("Criminal ID", min_value=1, step=1, key="admin_part_of_criminal_id")
+    if st.button("Create Part Of"):
+        result = create_part_of(int(investigation_id), int(criminal_id))
+        st.write(result)
+
+    # Read Part Of
+    st.subheader("Read Part Of")
+    if st.button("Get All Part Of"):
+        part_of_entries = read_part_of()
+        st.write(part_of_entries)
+
+    # Read Specific Part Of
+    st.subheader("Read Specific Part Of")
+    investigation_id_read = st.number_input("Investigation ID", min_value=1, step=1, key="admin_part_of_read_investigation_id")
+    criminal_id_read = st.number_input("Criminal ID", min_value=1, step=1, key="admin_part_of_read_criminal_id")
+    if st.button("Read Part Of"):
+        part_of_entry = read_specific_part_of(int(investigation_id_read), int(criminal_id_read))
+        st.write(part_of_entry)
+
+    # Delete Part Of
+    st.subheader("Delete Part Of")
+    investigation_id_delete = st.number_input("Investigation ID", min_value=1, step=1, key="admin_part_of_delete_investigation_id")
+    criminal_id_delete = st.number_input("Criminal ID", min_value=1, step=1, key="admin_part_of_delete_criminal_id")
+    if st.button("Delete Part Of"):
+        result = delete_part_of(int(investigation_id_delete), int(criminal_id_delete))
         st.write(result)
 
 

@@ -22,12 +22,16 @@ def connect_to_db():
 
 
 class Criminal(BaseModel):
-    name: str
+    first_name: str
+    last_name: str
     address: str
+    city: str
     gender: str
-    height: str
+    height: float
     date_arrest: str
+    date_release: str
     date_birth: str
+    occupation: str
 
 
 @router.post("/criminals/")
@@ -37,18 +41,22 @@ def create_criminal(criminal: Criminal):
 
     try:
         create_criminal_query = """
-        INSERT INTO CRIMINAL (name, address, gender, height, date_arrest, date_birth)
-        VALUES (%s, %s, %s, %s, %s, %s)
+        INSERT INTO CRIMINAL (first_name, last_name, address, city, gender, height, date_arrest, date_release, date_birth, occupation)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
         cursor.execute(
             create_criminal_query,
             (
-                criminal.name,
+                criminal.first_name,
+                criminal.last_name,
                 criminal.address,
+                criminal.city,
                 criminal.gender,
                 criminal.height,
                 criminal.date_arrest,
+                criminal.date_release,
                 criminal.date_birth,
+                criminal.occupation,
             ),
         )
         conn.commit()
@@ -96,18 +104,22 @@ def update_criminal(criminal_id: int, criminal: Criminal):
     cursor = conn.cursor()
     update_criminal_query = """
     UPDATE CRIMINAL
-    SET name = %s, address = %s, gender = %s, height = %s, date_arrest = %s, date_birth = %s
+    SET first_name = %s, last_name = %s, address = %s, city = %s, gender = %s, height = %s, date_arrest = %s, date_release = %s, date_birth = %s, occupation = %s
     WHERE criminal_id = %s
     """
     cursor.execute(
         update_criminal_query,
         (
-            criminal.name,
+            criminal.first_name,
+            criminal.last_name,
             criminal.address,
+            criminal.city,
             criminal.gender,
             criminal.height,
             criminal.date_arrest,
+            criminal.date_release,
             criminal.date_birth,
+            criminal.occupation,
             criminal_id,
         ),
     )

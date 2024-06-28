@@ -100,13 +100,97 @@ def delete_officer(officer_id):
     except requests.exceptions.JSONDecodeError:
         print(response.content)
         return {"message": "Failed to decode JSON response", "response_text": response.text}
+    
+# FIRs
 
+# Function to create an investigation
+def create_investigation(evidence, suspects, fir_id):
+    response = requests.post(
+        f"{API_URL}/investigations/",
+        json={
+            "evidence": evidence,
+            "suspects": suspects,
+            "fir_id": fir_id,
+        },
+    )
+    return response.json()
+
+# Function to read all investigations
+def read_investigations():
+    response = requests.get(f"{API_URL}/investigations/")
+    return response.json()
+
+# Function to read a specific investigation
+def read_investigation(investigation_id):
+    response = requests.get(f"{API_URL}/investigations/{investigation_id}")
+    return response.json()
+
+# Function to update an investigation
+def update_investigation(investigation_id, evidence, suspects, fir_id):
+    response = requests.put(
+        f"{API_URL}/investigations/{investigation_id}",
+        json={
+            "evidence": evidence,
+            "suspects": suspects,
+            "fir_id": fir_id,
+        },
+    )
+    return response.json()
+
+# Function to delete an investigation
+def delete_investigation(investigation_id):
+    response = requests.delete(f"{API_URL}/investigations/{investigation_id}")
+    return response.json()
 
 
 # Function to get data from an endpoint
 def get_data(endpoint):
     response = requests.get(f"{API_URL}/{endpoint}/")
     return response.json()
+
+# Function to create an FIR
+def create_fir(police_station_id, officer_id, title, act, complaint_name, date_added, details, contact_number):
+    response = requests.post(
+        f"{API_URL}/firs/",
+        json={
+            "police_station_id": police_station_id,
+            "officer_id": officer_id,
+            "title": title,
+            "act": act,
+            "complaint_name": complaint_name,
+            "date_added": date_added,
+            "details": details,
+            "contact_number": contact_number
+        },
+    )
+    return response.json()
+
+
+# Function to update an FIR
+def update_fir(fir_id, police_station_id, officer_id, title, act, complaint_name, date_added, details, contact_number):
+    response = requests.put(
+        f"{API_URL}/firs/{fir_id}",
+        json={
+            "police_station_id": police_station_id,
+            "officer_id": officer_id,
+            "title": title,
+            "act": act,
+            "complaint_name": complaint_name,
+            "date_added": date_added,
+            "details": details,
+            "contact_number": contact_number
+        },
+    )
+    return response.json()
+
+# Function to delete an FIR
+def delete_fir(fir_id):
+    response = requests.delete(f"{API_URL}/firs/{fir_id}")
+    try:
+        return response.json()
+    except requests.exceptions.JSONDecodeError:
+        print(response.content)
+        return {"message": "Failed to decode JSON response", "response_text": response.text}
 
 
 # Admin tab
@@ -210,6 +294,87 @@ def admin_tab():
     )
     if st.button("Delete Officer", key="admin_delete_officer_button"):
         result = delete_officer(officer_id_delete)
+        st.write(result)
+    
+        st.subheader("FIR Operations")
+
+    st.subheader("Create FIR")
+    police_station_id = st.number_input("Police Station ID", min_value=1, key="admin_police_station_id")
+    officer_id = st.number_input("Officer ID", min_value=1, key="admin_officer_id")
+    title = st.text_input("Title", key="admin_title")
+    act = st.text_input("Act", key="admin_act")
+    complaint_name = st.text_input("Complaint Name", key="admin_complaint_name")
+    date_added = st.text_input("Date Added (YYYY-MM-DD)", key="admin_date_added")
+    details = st.text_area("Details", key="admin_details")
+    contact_number = st.text_input("Contact Number", key="admin_contact_number")
+    if st.button("Create FIR", key="admin_create_fir_button"):
+        result = create_fir(police_station_id, officer_id, title, act, complaint_name, date_added, details, contact_number)
+        st.write(result)
+
+    st.subheader("Update FIR")
+    fir_id_update = st.number_input("FIR ID to Update", min_value=1, key="admin_fir_id_update")
+    update_police_station_id = st.number_input("New Police Station ID", min_value=1, key="admin_update_police_station_id")
+    update_officer_id = st.number_input("New Officer ID", min_value=1, key="admin_update_officer_id")
+    update_title = st.text_input("New Title", key="admin_update_title")
+    update_act = st.text_input("New Act", key="admin_update_act")
+    update_complaint_name = st.text_input("New Complaint Name", key="admin_update_complaint_name")
+    update_date_added = st.text_input("New Date Added (YYYY-MM-DD)", key="admin_update_date_added")
+    update_details = st.text_area("New Details", key="admin_update_details")
+    update_contact_number = st.text_input("New Contact Number", key="admin_update_contact_number")
+    if st.button("Update FIR", key="admin_update_fir_button"):
+        result = update_fir(fir_id_update, update_police_station_id, update_officer_id, update_title, update_act, update_complaint_name, update_date_added, update_details, update_contact_number)
+        st.write(result)
+
+    st.subheader("Delete FIR")
+    fir_id_delete = st.number_input("FIR ID to Delete", min_value=1, key="admin_fir_id_delete")
+    if st.button("Delete FIR", key="admin_delete_fir_button"):
+        result = delete_fir(fir_id_delete)
+        st.write(result)
+
+    st.subheader("Read FIRs")
+    if st.button("Get All FIRs", key="admin_get_firs"):
+        firs = get_data("firs")
+        st.write(firs)
+    
+    st.title("Investigation Operations")
+
+    # Create Investigation
+    st.subheader("Create Investigation")
+    evidence = st.text_input("Evidence")
+    suspects = st.text_input("Suspects")
+    fir_id = st.number_input("FIR ID", min_value=1)
+    if st.button("Create Investigation"):
+        result = create_investigation(evidence, suspects, fir_id)
+        st.write(result)
+
+    # Read Investigations
+    st.subheader("Read Investigations")
+    if st.button("Get All Investigations"):
+        investigations = read_investigations()
+        st.write(investigations)
+
+    # Read Specific Investigation
+    st.subheader("Read Specific Investigation")
+    investigation_id_read = st.number_input("Investigation ID to Read", min_value=1, key="read_investigation_id")
+    if st.button("Read Investigation"):
+        investigation = read_investigation(investigation_id_read)
+        st.write(investigation)
+
+    # Update Investigation
+    st.subheader("Update Investigation")
+    investigation_id_update = st.number_input("Investigation ID to Update", min_value=1, key="update_investigation_id")
+    update_evidence = st.text_input("New Evidence", key="update_evidence")
+    update_suspects = st.text_input("New Suspects", key="update_suspects")
+    update_fir_id = st.number_input("New FIR ID", min_value=1, key="update_fir_id")
+    if st.button("Update Investigation"):
+        result = update_investigation(investigation_id_update, update_evidence, update_suspects, update_fir_id)
+        st.write(result)
+
+    # Delete Investigation
+    st.subheader("Delete Investigation")
+    investigation_id_delete = st.number_input("Investigation ID to Delete", min_value=1, key="delete_investigation_id")
+    if st.button("Delete Investigation"):
+        result = delete_investigation(investigation_id_delete)
         st.write(result)
 
 

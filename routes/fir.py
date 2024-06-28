@@ -29,8 +29,10 @@ class FIR(BaseModel):
     complaint_name: str
     date_added: str
     details: str
+    contact_number: str
 
 
+# @router.post("/firs/")
 @router.post("/firs/")
 def create_fir(fir: FIR):
     conn = connect_to_db()
@@ -38,8 +40,8 @@ def create_fir(fir: FIR):
 
     try:
         create_fir_query = """
-        INSERT INTO FIR (police_station_id, officer_id, title, act, complaint_name, date_added, details)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO FIR (police_station_id, officer_id, title, act, complaint_name, date_added, details, contact_number)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         """
         cursor.execute(
             create_fir_query,
@@ -51,6 +53,7 @@ def create_fir(fir: FIR):
                 fir.complaint_name,
                 fir.date_added,
                 fir.details,
+                fir.contact_number
             ),
         )
         conn.commit()
@@ -63,6 +66,7 @@ def create_fir(fir: FIR):
     finally:
         cursor.close()
         conn.close()
+
 
 
 @router.get("/firs/")

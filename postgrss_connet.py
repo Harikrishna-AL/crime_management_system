@@ -12,6 +12,7 @@ from routes import (
     investigation_officers_router,
     crimes_involved_router,
     part_of_router,
+    validate_router,
 )
 
 app = FastAPI()
@@ -25,6 +26,7 @@ app.include_router(criminal_router)
 app.include_router(investigation_officers_router)
 app.include_router(crimes_involved_router)
 app.include_router(part_of_router)
+app.include_router(validate_router)
 
 if __name__ == "__main__":
     import uvicorn

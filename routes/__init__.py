@@ -8,3 +8,4 @@ from .criminal import router as criminal_router
 from .investigation_officers import router as investigation_officers_router
 from .crimes_involved import router as crimes_involved_router
 from .part_of import router as part_of_router
+from .validate_user import router as validate_router

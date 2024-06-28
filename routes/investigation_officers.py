@@ -26,6 +26,26 @@ class InvestigationOfficer(BaseModel):
     investigation_id: int
 
 
+@router.get("/officerAffiliation/{officer_id}")
+def get_investigation_officer_affiliation(officer_id: int):
+    conn = connect_to_db()
+    cursor = conn.cursor()  # Using DictCursor for easier JSON serialization
+    try:
+        read_investigation_officer_affiliation_query = """
+        SELECT FIR.*, INVESTIGATION.*
+        FROM INVESTIGATION_OFFICER
+        JOIN INVESTIGATION ON INVESTIGATION_OFFICER.investigation_id = INVESTIGATION.investigation_id
+        JOIN FIR ON INVESTIGATION.fir_id = FIR.fir_id
+        WHERE INVESTIGATION_OFFICER.officer_id = %s
+        """
+        cursor.execute(read_investigation_officer_affiliation_query, (officer_id,))
+        investigation_officer_affiliation = cursor.fetchall()
+        if not investigation_officer_affiliation:
+            raise HTTPException(status_code=404, detail="Officer affiliation not found")
+        return investigation_officer_affiliation
+    except Exception as err:
+        return {"message": f"Error: {err}"}
+    
 @router.post("/investigation_officers/")
 def create_investigation_officer(investigation_officer: InvestigationOfficer):
     conn = connect_to_db()

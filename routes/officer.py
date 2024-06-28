@@ -128,12 +128,16 @@ def update_officer(officer_id: int, officer: Officer):
 
 
 @router.delete("/officers/{officer_id}")
-def delete_officer(officer_id: int):
-    conn = connect_to_db()
-    cursor = conn.cursor()
-    delete_officer_query = "DELETE FROM POLICE_OFFICER WHERE officer_id = %s"
-    cursor.execute(delete_officer_query, (officer_id,))
-    conn.commit()
-    cursor.close()
-    conn.close()
-    return {"message": "Officer deleted successfully"}
+def delete_officer(officer_id: str):
+    try:
+        officer_id = int(officer_id)
+        conn = connect_to_db()
+        cursor = conn.cursor()
+        delete_officer_query = "DELETE FROM POLICE_OFFICER WHERE officer_id = %s"
+        cursor.execute(delete_officer_query, (officer_id,))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return {"message": "Officer deleted successfully"}
+    except Exception as e:
+        return {"message": f"Error: {e}"}

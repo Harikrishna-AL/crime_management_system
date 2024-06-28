@@ -95,7 +95,12 @@ def update_officer(
 
 def delete_officer(officer_id):
     response = requests.delete(f"{API_URL}/officers/{officer_id}")
-    return response.json()
+    try:
+        return response.json()
+    except requests.exceptions.JSONDecodeError:
+        print(response.content)
+        return {"message": "Failed to decode JSON response", "response_text": response.text}
+
 
 
 # Function to get data from an endpoint

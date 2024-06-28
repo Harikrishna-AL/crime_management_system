@@ -142,6 +142,47 @@ def delete_investigation(investigation_id):
     response = requests.delete(f"{API_URL}/investigations/{investigation_id}")
     return response.json()
 
+# Function to create a crime
+def create_crime(fir_id, type_of_crime, details, investigation_id):
+    response = requests.post(
+        f"{API_URL}/crimes/",
+        json={
+            "fir_id": fir_id,
+            "type_of_crime": type_of_crime,
+            "details": details,
+            "investigation_id": investigation_id,
+        },
+    )
+    return response.json()
+
+# Function to read all crimes
+def read_crimes():
+    response = requests.get(f"{API_URL}/crimes/")
+    return response.json()
+
+# Function to read a specific crime
+def read_crime(crime_id):
+    response = requests.get(f"{API_URL}/crimes/{crime_id}")
+    return response.json()
+
+# Function to update a crime
+def update_crime(crime_id, fir_id, type_of_crime, details, investigation_id):
+    response = requests.put(
+        f"{API_URL}/crimes/{crime_id}",
+        json={
+            "fir_id": fir_id,
+            "type_of_crime": type_of_crime,
+            "details": details,
+            "investigation_id": investigation_id,
+        },
+    )
+    return response.json()
+
+# Function to delete a crime
+def delete_crime(crime_id):
+    response = requests.delete(f"{API_URL}/crimes/{crime_id}")
+    return response.json()
+
 
 # Function to get data from an endpoint
 def get_data(endpoint):
@@ -375,6 +416,49 @@ def admin_tab():
     investigation_id_delete = st.number_input("Investigation ID to Delete", min_value=1, key="delete_investigation_id")
     if st.button("Delete Investigation"):
         result = delete_investigation(investigation_id_delete)
+        st.write(result)
+    
+    st.title("Crime Operations")
+
+    # Create Crime
+    st.subheader("Create Crime")
+    fir_id = st.number_input("FIR ID", min_value=1, key="admin_crime_id")
+    type_of_crime = st.text_input("Type of Crime")
+    details = st.text_area("Details")
+    investigation_id = st.number_input("Investigation ID", min_value=1)
+    if st.button("Create Crime"):
+        result = create_crime(fir_id, type_of_crime, details, investigation_id)
+        st.write(result)
+
+    # Read Crimes
+    st.subheader("Read Crimes")
+    if st.button("Get All Crimes"):
+        crimes = read_crimes()
+        st.write(crimes)
+
+    # Read Specific Crime
+    st.subheader("Read Specific Crime")
+    crime_id_read = st.number_input("Crime ID to Read", min_value=1, key="read_crime_id")
+    if st.button("Read Crime"):
+        crime = read_crime(crime_id_read)
+        st.write(crime)
+
+    # Update Crime
+    st.subheader("Update Crime")
+    crime_id_update = st.number_input("Crime ID to Update", min_value=1, key="admin_update_crime_id")
+    update_fir_id = st.number_input("New FIR ID", min_value=1, key="admin_update_crime_fir_id")
+    update_type_of_crime = st.text_input("New Type of Crime", key="admin_update_type_of_crime")
+    update_details = st.text_area("New Details", key="admin_crime_update_details")
+    update_investigation_id = st.number_input("New Investigation ID", min_value=1, key="admin_crime_update_investigation_id")
+    if st.button("Update Crime"):
+        result = update_crime(crime_id_update, update_fir_id, update_type_of_crime, update_details, update_investigation_id)
+        st.write(result)
+
+    # Delete Crime
+    st.subheader("Delete Crime")
+    crime_id_delete = st.number_input("Crime ID to Delete", min_value=1, key="admin_delete_crime_id")
+    if st.button("Delete Crime"):
+        result = delete_crime(crime_id_delete)
         st.write(result)
 
 

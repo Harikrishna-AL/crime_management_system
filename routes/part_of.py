@@ -4,6 +4,7 @@ import psycopg2
 from psycopg2 import sql
 from dotenv import load_dotenv
 import os
+from psycopg2.extras import RealDictCursor
 
 router = APIRouter()
 load_dotenv()
@@ -29,7 +30,7 @@ class PartOf(BaseModel):
 @router.post("/part_of/")
 def create_part_of(part_of: PartOf):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     try:
         create_part_of_query = """
@@ -54,7 +55,7 @@ def create_part_of(part_of: PartOf):
 @router.get("/part_of/")
 def read_part_of():
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     read_part_of_query = "SELECT * FROM Part_Of"
     cursor.execute(read_part_of_query)
     part_of = cursor.fetchall()
@@ -66,7 +67,7 @@ def read_part_of():
 @router.get("/part_of/{investigation_id}/{criminal_id}")
 def read_part_of(investigation_id: int, criminal_id: int):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     read_part_of_query = (
         "SELECT * FROM Part_Of WHERE investigation_id = %s AND criminal_id = %s"
     )
@@ -83,7 +84,7 @@ def read_part_of(investigation_id: int, criminal_id: int):
 @router.delete("/part_of/{investigation_id}/{criminal_id}")
 def delete_part_of(investigation_id: int, criminal_id: int):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     delete_part_of_query = (
         "DELETE FROM Part_Of WHERE investigation_id = %s AND criminal_id = %s"
     )

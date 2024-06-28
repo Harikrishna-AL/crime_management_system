@@ -4,6 +4,7 @@ import psycopg2
 from psycopg2 import sql
 from dotenv import load_dotenv
 import os
+from psycopg2.extras import RealDictCursor
 
 router = APIRouter()
 load_dotenv()
@@ -29,7 +30,7 @@ class Role(BaseModel):
 @router.get("/roles/")
 def read_roles():
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     read_roles_query = "SELECT * FROM ROLE"
     cursor.execute(read_roles_query)
     roles = cursor.fetchall()
@@ -41,7 +42,7 @@ def read_roles():
 @router.post("/roles/")
 def create_role(role: Role):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     try:
         create_role_query = """
@@ -67,7 +68,7 @@ def create_role(role: Role):
 @router.put("/roles/{role_id}")
 def update_role(role_id: int, role: Role):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     update_role_query = """
     UPDATE ROLE
     SET role_name = %s, permission = %s
@@ -83,7 +84,7 @@ def update_role(role_id: int, role: Role):
 @router.delete("/roles/{role_id}")
 def delete_role(role_id: int):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     delete_role_query = "DELETE FROM ROLE WHERE role_id = %s"
     cursor.execute(delete_role_query, (role_id,))
     conn.commit()

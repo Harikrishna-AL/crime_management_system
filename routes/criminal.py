@@ -4,6 +4,7 @@ import psycopg2
 from psycopg2 import sql
 from dotenv import load_dotenv
 import os
+from psycopg2.extras import RealDictCursor
 
 router = APIRouter()
 load_dotenv()
@@ -37,7 +38,7 @@ class Criminal(BaseModel):
 @router.post("/criminals/")
 def create_criminal(criminal: Criminal):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     try:
         create_criminal_query = """
@@ -74,7 +75,7 @@ def create_criminal(criminal: Criminal):
 @router.get("/criminals/")
 def read_criminals():
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     read_criminals_query = "SELECT * FROM CRIMINAL"
     cursor.execute(read_criminals_query)
     criminals = cursor.fetchall()
@@ -86,7 +87,7 @@ def read_criminals():
 @router.get("/criminals/{criminal_id}")
 def read_criminal(criminal_id: int):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     read_criminal_query = "SELECT * FROM CRIMINAL WHERE criminal_id = %s"
     cursor.execute(read_criminal_query, (criminal_id,))
     criminal = cursor.fetchone()
@@ -101,7 +102,7 @@ def read_criminal(criminal_id: int):
 @router.put("/criminals/{criminal_id}")
 def update_criminal(criminal_id: int, criminal: Criminal):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     update_criminal_query = """
     UPDATE CRIMINAL
     SET first_name = %s, last_name = %s, address = %s, city = %s, gender = %s, height = %s, date_arrest = %s, date_release = %s, date_birth = %s, occupation = %s
@@ -132,7 +133,7 @@ def update_criminal(criminal_id: int, criminal: Criminal):
 @router.delete("/criminals/{criminal_id}")
 def delete_criminal(criminal_id: int):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     delete_criminal_query = "DELETE FROM CRIMINAL WHERE criminal_id = %s"
     cursor.execute(delete_criminal_query, (criminal_id,))
     conn.commit()

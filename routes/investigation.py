@@ -4,6 +4,7 @@ import psycopg2
 from psycopg2 import sql
 from dotenv import load_dotenv
 import os
+from psycopg2.extras import RealDictCursor
 
 router = APIRouter()
 load_dotenv()
@@ -30,7 +31,7 @@ class Investigation(BaseModel):
 @router.post("/investigations/")
 def create_investigation(investigation: Investigation):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     try:
         create_investigation_query = """
@@ -56,7 +57,7 @@ def create_investigation(investigation: Investigation):
 @router.get("/investigations/")
 def read_investigations():
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     read_investigations_query = "SELECT * FROM INVESTIGATION"
     cursor.execute(read_investigations_query)
     investigations = cursor.fetchall()
@@ -68,7 +69,7 @@ def read_investigations():
 @router.get("/investigations/{investigation_id}")
 def read_investigation(investigation_id: int):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     read_investigation_query = "SELECT * FROM INVESTIGATION WHERE investigation_id = %s"
     cursor.execute(read_investigation_query, (investigation_id,))
     investigation = cursor.fetchone()
@@ -83,7 +84,7 @@ def read_investigation(investigation_id: int):
 @router.put("/investigations/{investigation_id}")
 def update_investigation(investigation_id: int, investigation: Investigation):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     update_investigation_query = """
     UPDATE INVESTIGATION
     SET evidence = %s, suspects = %s, fir_id = %s
@@ -107,7 +108,7 @@ def update_investigation(investigation_id: int, investigation: Investigation):
 @router.delete("/investigations/{investigation_id}")
 def delete_investigation(investigation_id: int):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     delete_investigation_query = "DELETE FROM INVESTIGATION WHERE investigation_id = %s"
     cursor.execute(delete_investigation_query, (investigation_id,))
     conn.commit()

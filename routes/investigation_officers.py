@@ -4,6 +4,7 @@ import psycopg2
 from psycopg2 import sql
 from dotenv import load_dotenv
 import os
+from psycopg2.extras import RealDictCursor
 
 router = APIRouter()
 load_dotenv()
@@ -49,7 +50,7 @@ def get_investigation_officer_affiliation(officer_id: int):
 @router.post("/investigation_officers/")
 def create_investigation_officer(investigation_officer: InvestigationOfficer):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     try:
         create_investigation_officer_query = """
@@ -75,7 +76,7 @@ def create_investigation_officer(investigation_officer: InvestigationOfficer):
 @router.get("/investigation_officers/")
 def read_investigation_officers():
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     read_investigation_officers_query = "SELECT * FROM Investigation_Officer"
     cursor.execute(read_investigation_officers_query)
     investigation_officers = cursor.fetchall()
@@ -87,7 +88,7 @@ def read_investigation_officers():
 @router.get("/investigation_officers/{officer_id}/{investigation_id}")
 def read_investigation_officer(officer_id: int, investigation_id: int):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     read_investigation_officer_query = "SELECT * FROM Investigation_Officer WHERE officer_id = %s AND investigation_id = %s"
     cursor.execute(read_investigation_officer_query, (officer_id, investigation_id))
     investigation_officer = cursor.fetchone()
@@ -102,7 +103,7 @@ def read_investigation_officer(officer_id: int, investigation_id: int):
 @router.delete("/investigation_officers/{officer_id}/{investigation_id}")
 def delete_investigation_officer(officer_id: int, investigation_id: int):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     delete_investigation_officer_query = "DELETE FROM Investigation_Officer WHERE officer_id = %s AND investigation_id = %s"
     cursor.execute(delete_investigation_officer_query, (officer_id, investigation_id))
     conn.commit()

@@ -4,6 +4,7 @@ import psycopg2
 from psycopg2 import sql
 from dotenv import load_dotenv
 import os
+from psycopg2.extras import RealDictCursor
 
 router = APIRouter()
 
@@ -32,7 +33,7 @@ class PoliceStation(BaseModel):
 @router.get("/stations/")
 def read_stations():
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     read_stations_query = "SELECT * FROM POLICE_STATION"
     cursor.execute(read_stations_query)
     stations = cursor.fetchall()
@@ -44,7 +45,7 @@ def read_stations():
 @router.post("/stations/")
 def create_station(station: PoliceStation):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     try:
         create_station_query = """
@@ -75,7 +76,7 @@ def create_station(station: PoliceStation):
 @router.put("/stations/{station_id}")
 def update_station(station_id: int, station: PoliceStation):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     update_station_query = """
     UPDATE POLICE_STATION
     SET station_name = %s, location = %s, username = %s, password = %s
@@ -100,7 +101,7 @@ def update_station(station_id: int, station: PoliceStation):
 @router.delete("/stations/{station_id}")
 def delete_station(station_id: int):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     delete_station_query = "DELETE FROM POLICE_STATION WHERE station_id = %s"
     cursor.execute(delete_station_query, (station_id,))
     conn.commit()

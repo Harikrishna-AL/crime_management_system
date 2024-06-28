@@ -4,6 +4,7 @@ import psycopg2
 from psycopg2 import sql
 from dotenv import load_dotenv
 import os
+from psycopg2.extras import RealDictCursor
 
 router = APIRouter()
 load_dotenv()
@@ -31,7 +32,7 @@ class Crime(BaseModel):
 @router.post("/crimes/")
 def create_crime(crime: Crime):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     try:
         create_crime_query = """
@@ -57,7 +58,7 @@ def create_crime(crime: Crime):
 @router.get("/crimes/")
 def read_crimes():
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     read_crimes_query = "SELECT * FROM CRIME"
     cursor.execute(read_crimes_query)
     crimes = cursor.fetchall()
@@ -69,7 +70,7 @@ def read_crimes():
 @router.get("/crimes/{crime_id}")
 def read_crime(crime_id: int):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     read_crime_query = "SELECT * FROM CRIME WHERE crime_id = %s"
     cursor.execute(read_crime_query, (crime_id,))
     crime = cursor.fetchone()
@@ -84,7 +85,7 @@ def read_crime(crime_id: int):
 @router.put("/crimes/{crime_id}")
 def update_crime(crime_id: int, crime: Crime):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     update_crime_query = """
     UPDATE CRIME
     SET fir_id = %s, type_of_crime = %s, details = %s, investigation_id = %s
@@ -109,7 +110,7 @@ def update_crime(crime_id: int, crime: Crime):
 @router.delete("/crimes/{crime_id}")
 def delete_crime(crime_id: int):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     delete_crime_query = "DELETE FROM CRIME WHERE crime_id = %s"
     cursor.execute(delete_crime_query, (crime_id,))
     conn.commit()

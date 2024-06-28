@@ -4,6 +4,7 @@ import psycopg2
 from psycopg2 import sql
 from dotenv import load_dotenv
 import os
+from psycopg2.extras import RealDictCursor
 
 router = APIRouter()
 load_dotenv()
@@ -36,7 +37,7 @@ class FIR(BaseModel):
 @router.post("/firs/")
 def create_fir(fir: FIR):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     try:
         create_fir_query = """
@@ -72,7 +73,7 @@ def create_fir(fir: FIR):
 @router.get("/firs/")
 def read_firs():
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     read_firs_query = "SELECT * FROM FIR"
     cursor.execute(read_firs_query)
     firs = cursor.fetchall()
@@ -84,7 +85,7 @@ def read_firs():
 @router.get("/firs/{fir_id}")
 def read_fir(fir_id: int):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     read_fir_query = "SELECT * FROM FIR WHERE fir_id = %s"
     cursor.execute(read_fir_query, (fir_id,))
     fir = cursor.fetchone()
@@ -99,7 +100,7 @@ def read_fir(fir_id: int):
 @router.put("/firs/{fir_id}")
 def update_fir(fir_id: int, fir: FIR):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     update_fir_query = """
     UPDATE FIR
     SET police_station_id = %s, officer_id = %s, title = %s, act = %s, complaint_name = %s, date_added = %s, details = %s
@@ -127,7 +128,7 @@ def update_fir(fir_id: int, fir: FIR):
 @router.delete("/firs/{fir_id}")
 def delete_fir(fir_id: int):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     delete_fir_query = "DELETE FROM FIR WHERE fir_id = %s"
     cursor.execute(delete_fir_query, (fir_id,))
     conn.commit()

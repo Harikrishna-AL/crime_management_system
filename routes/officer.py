@@ -4,6 +4,7 @@ import psycopg2
 from psycopg2 import sql
 from dotenv import load_dotenv
 import os
+from psycopg2.extras import RealDictCursor
 
 router = APIRouter()
 
@@ -37,7 +38,7 @@ class Officer(BaseModel):
 @router.post("/officers/")
 def create_officer(officer: Officer):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     try:
         create_officer_query = """
@@ -73,7 +74,7 @@ def create_officer(officer: Officer):
 @router.get("/officers/")
 def read_officers():
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     read_officers_query = "SELECT * FROM POLICE_OFFICER"
     cursor.execute(read_officers_query)
     officers = cursor.fetchall()
@@ -85,7 +86,7 @@ def read_officers():
 @router.get("/officers/{officer_id}")
 def read_officer(officer_id: int):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     read_officer_query = "SELECT * FROM POLICE_OFFICER WHERE officer_id = %s"
     cursor.execute(read_officer_query, (officer_id,))
     officer = cursor.fetchone()
@@ -100,7 +101,7 @@ def read_officer(officer_id: int):
 @router.put("/officers/{officer_id}")
 def update_officer(officer_id: int, officer: Officer):
     conn = connect_to_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     update_officer_query = """
     UPDATE POLICE_OFFICER
     SET role_id = %s, first_name = %s, last_name = %s, post = %s, mobile_no = %s, address = %s, username = %s, password = %s, station_id = %s
@@ -132,7 +133,7 @@ def delete_officer(officer_id: str):
     try:
         officer_id = int(officer_id)
         conn = connect_to_db()
-        cursor = conn.cursor()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
         delete_officer_query = "DELETE FROM POLICE_OFFICER WHERE officer_id = %s"
         cursor.execute(delete_officer_query, (officer_id,))
         conn.commit()

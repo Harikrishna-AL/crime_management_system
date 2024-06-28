@@ -688,7 +688,9 @@ def admin_tab():
     st.subheader("Read Criminals")
     if st.button("Get All Criminals"):
         criminals = read_criminals()
-        st.write(criminals)
+        if criminals:
+            st.table(criminals)
+        # st.write(criminals)
 
     # Read Specific Criminal
     st.subheader("Read Specific Criminal")

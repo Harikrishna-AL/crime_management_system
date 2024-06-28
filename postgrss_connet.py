@@ -46,6 +46,7 @@ app.include_router(part_of_router)
 class Search(BaseModel):
     search: str
     db: str
+    parameter: str
 
 @app.get("/get_by_search")
 def get_by_search(search: Search):
@@ -55,8 +56,9 @@ def get_by_search(search: Search):
     # Convert table name to lowercase and ensure no quotes around it
     table_name = sql.Identifier(search.db.lower()).as_string(conn).strip('"')
     
-    query = sql.SQL("SELECT * FROM {} WHERE first_name ILIKE {}").format(
+    query = sql.SQL("SELECT * FROM {} WHERE {} ILIKE {}").format(
         sql.SQL(table_name),
+        sql.Identifier(search.parameter),
         sql.Literal(f'{search.search}%')
     )
     print(query)

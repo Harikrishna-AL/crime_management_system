@@ -405,6 +405,14 @@ def delete_part_of(investigation_id, criminal_id):
     response = requests.delete(f"{API_URL}/part_of/{investigation_id}/{criminal_id}")
     return response.json()
 
+
+def search_criminals(search_keyword):
+    response = requests.get(
+        f"{API_URL}/get_by_search",
+        json={"search": search_keyword, "db": "CRIMINAL", "parameter": "first_name"}
+    )
+    return response.json()
+
 # Admin tab
 def admin_tab():
     st.header("Admin Operations")
@@ -685,10 +693,17 @@ def admin_tab():
             st.write(result)
 
     # Read Criminals
-    with st.expander("Read Criminals"):
-        if st.button("Get All Criminals"):
-            criminals = read_criminals()
-            st.write(criminals)
+    st.subheader("Read Criminals")
+    search_keyword = st.text_input("Search by First Name", "")
+    if st.button("Search Criminals"):
+        criminals = search_criminals(search_keyword)
+        if criminals:
+            st.table(criminals)
+    if st.button("Get All Criminals"):
+        criminals = read_criminals()
+        if criminals:
+            st.table(criminals)
+        # st.write(criminals)
 
     # Read Specific Criminal
     with st.expander("Read Specific Criminal"):

@@ -71,6 +71,28 @@ def create_criminal(criminal: Criminal):
         conn.close()
 
 
+@router.get("/getCriminalRecords/")
+def get_criminal_records(first_name: str, last_name: str):
+    conn = connect_to_db()
+    cursor = conn.cursor()
+    try:
+        read_criminal_records_query = """
+        SELECT CRIME.*, POLICE_OFFICER.officer_id, CONCAT(POLICE_OFFICER.first_name, ' ', POLICE_OFFICER.last_name) AS officer_name
+        FROM CRIMINAL
+        JOIN CRIMES_INVOLVED ON CRIMINAL.criminal_id = CRIMES_INVOLVED.criminal_id
+        JOIN CRIME ON CRIMES_INVOLVED.crime_id = CRIME.crime_id
+        JOIN FIR ON CRIME.fir_id = FIR.fir_id
+        JOIN POLICE_OFFICER ON FIR.officer_id = POLICE_OFFICER.officer_id
+        WHERE CRIMINAL.first_name = %s AND CRIMINAL.last_name = %s
+        """
+        cursor.execute(read_criminal_records_query, (first_name, last_name))
+        criminal_records = cursor.fetchall()
+        if not criminal_records:
+            raise HTTPException(status_code=404, detail="Criminal records not found")
+        return criminal_records
+    except Exception as err:
+        return {"message": f"Error: {err}"}
+
 @router.get("/criminals/")
 def read_criminals():
     conn = connect_to_db()

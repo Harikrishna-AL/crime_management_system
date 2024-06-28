@@ -122,6 +122,12 @@ def delete_officer(officer_id):
         print(response.content)
         return {"message": "Failed to decode JSON response", "response_text": response.text}
     
+# Get officer affiliations
+
+def get_officer_affiliations(officer_id):
+    response = requests.get(f"{API_URL}/officerAffiliation/{officer_id}")
+    return response.json()
+    
 # FIRs
 
 # Function to create an investigation
@@ -304,6 +310,13 @@ def update_criminal(criminal_id, first_name, last_name, address, city, gender, h
     )
     return response.json()
 
+# Function to get criminal record
+
+def get_criminal_record(first_name, last_name):
+    # pass first name and last name as query parameters
+    response = requests.get(f"{API_URL}/getCriminalRecords", params={"first_name": first_name, "last_name": last_name})
+    return response.json()
+
 # Function to delete a criminal
 def delete_criminal(criminal_id):
     response = requests.delete(f"{API_URL}/criminals/{criminal_id}")
@@ -472,6 +485,13 @@ def admin_tab():
         stations = get_data("stations")
         st.write(stations)
 
+    st.subheader("Get Officer Data")
+    if st.button("Get Officer Details", key="admin_get_officer_affiliations"):
+        # take officer id in input
+        officer_id = st.number_input("Officer ID", min_value=1, key="admin_officer_affiliations")
+        officer_affiliations = get_officer_affiliations(officer_id)
+        st.write(officer_affiliations)
+
     if st.button("Get All Roles", key="admin_get_roles"):
         roles = get_data("roles")
         st.write(roles)
@@ -522,7 +542,7 @@ def admin_tab():
         result = delete_officer(officer_id_delete)
         st.write(result)
     
-        st.subheader("FIR Operations")
+    st.subheader("FIR Operations")
 
     st.subheader("Create FIR")
     police_station_id = st.number_input("Police Station ID", min_value=1, key="admin_police_station_id")
@@ -694,6 +714,15 @@ def admin_tab():
     if st.button("Update Criminal"):
         result = update_criminal(criminal_id_update, update_first_name, update_last_name, update_address, update_city, update_gender, update_height, update_date_arrest, update_date_release, update_date_birth, update_occupation)
         st.write(result)
+    
+
+    st.subheader("Lookup Criminal")
+    criminal_lookup_first_name = st.text_input("First Name", key="admin_criminal_lookup_first_name")
+    criminal_lookup_last_name = st.text_input("Last Name", key="admin_criminal_lookup_last_name")
+    if st.button("Lookup Criminal Record"):
+        criminal_record = get_criminal_record(criminal_lookup_first_name, criminal_lookup_last_name)
+        st.write(criminal_record)
+
 
     # Delete Criminal
     st.subheader("Delete Criminal")
